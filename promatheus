@@ -1,0 +1,33 @@
+tạo prometheus, node_exporter và grafana 
+- prometheus:  
+	- docker pull prom/prometheus
+	- docker run -p 9090:9090 -v /path/to/prometheus.yml:/etc/prometheus/prometheus.yml prom/prometheus
+	- truy cập https://localhost:9090 
+- node_exporter: 
+	- wget https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz
+	- tar xzf node_exporter-0.18.1.linux-amd64.tar.gz
+	- cp node_exporter-0.18.1.linux-amd64/node_exporter /usr/local/bin/node_exporter
+	- sudo vi /etc/systemd/system/node-exporter.service
+		[Unit]
+		Description=Prometheus Node Exporter Service
+		After=network.target
+
+		[Service]
+		Type=simple
+		ExecStart=/usr/local/bin/node_exporter
+
+		[Install]
+		WantedBy=multi-user.target
+	- systemctl daemon-reload
+	- sudo service node-exporter start
+	- sudo service node-exporter status
+	- thêm vào file prometheus.yml 
+		- job_name: 'node-exporter'
+    			static_configs:
+    			- targets: ['localhost:9100']
+	- docker start prometheus
+	- docker status prometheus
+- grafana: 
+	- docker run -d --name=grafana -p 3000:3000 grafana/grafana
+
+=> note: truy cập các trang wed theo form: https:// 13.215.183.190:<port> 
